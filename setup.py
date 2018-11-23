@@ -37,7 +37,6 @@ setup(name=name,
       keywords='',
       classifiers=[
           'Development Status :: 3 - Alpha',
-          'License :: OSI Approved :: MIT',
           'Natural Language :: English',
           'Programming Language :: Python :: 3.6',
       ])
