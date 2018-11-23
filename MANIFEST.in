@@ -1,0 +1,38 @@
+include CHANGES
+include MANIFEST.in
+include README.md
+include src
+
+exclude .dockerignore
+exclude .env
+exclude .env.tpl
+exclude .jshintrc
+exclude .pre-commit-config.yaml
+exclude .secrets.baseline
+exclude .style.yapf
+exclude .tox
+exclude docker-compose.yml
+exclude Dockerfile.dev
+exclude entrypoint.sh
+exclude Makefile
+exclude manage.py
+exclude manage.py
+exclude tests
+exclude ROADMAP
+
+prune .circleci
+prune db
+prune docker
+prune tests
+
+
+recursive-include src/flower_azure *.*
+recursive-include src/month_field *.*
+recursive-include src/drf_querystringfilter *.*
+
+exclude deploy
+exclude docker
+exclude hooks
+recursive-exclude docker *
+recursive-exclude deploy *
+recursive-exclude hooks *
