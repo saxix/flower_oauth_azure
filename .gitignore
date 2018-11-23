@@ -1,0 +1,6 @@
+.*
+!.gitignore
+Pipfile
+Pipfile.lock
+dist
+src/flower_oauth_azure.egg-info

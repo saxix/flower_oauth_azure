@@ -8,17 +8,9 @@ from urllib.parse import urlencode
 import jwt.api_jwt as jwt
 import tornado.auth
 import tornado.web
-from cryptography.hazmat.backends import default_backend
-from cryptography.x509 import load_pem_x509_certificate
 from flower.views import BaseHandler
 from tornado import httpclient
-from jwt import DecodeError, ExpiredSignature, decode as jwt_decode
-
-
-#
-# from flower.views.auth import GithubLoginHandler, GoogleAuth2LoginHandler
-# a = GoogleAuth2LoginHandler
-# b = GithubLoginHandler
+from jwt import DecodeError
 
 
 class AzureTenantLoginHandler(BaseHandler, tornado.auth.OAuth2Mixin):
@@ -107,6 +99,9 @@ class AzureTenantLoginHandler(BaseHandler, tornado.auth.OAuth2Mixin):
 
     @tornado.web.asynchronous
     def _on_certificate(self, id_token, key_id, algorithm, response):
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.x509 import load_pem_x509_certificate
+
         content = json.loads(response.body)
         # find the proper key for the kid
         for key in content['keys']:
@@ -126,19 +121,13 @@ class AzureTenantLoginHandler(BaseHandler, tornado.auth.OAuth2Mixin):
         decoded = self.jwt_decode_handler(id_token, key=certificate.public_key(),
                                           algorithms=algorithm,
                                           audience=self.settings[self._OAUTH_SETTINGS_KEY]['key'])
-        # decoded = jwt_decode(
-        #     id_token,
-        #     key=certificate.public_key(),
-        #     algorithms=algorithm,
-        #     audience=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
-        # )
         self._login(decoded)
 
     def _login(self, payload):
         uname = payload.get('email', payload.get('unique_name'))
         if uname and re.match(self.application.options.auth, uname):
             self.set_secure_cookie("user", str(uname))
-            next_ = self.get_argument('next', '/')
+            next_ = self.get_argument('next', '/' + os.environ.get('FLOWER_URL_PREFIX', ''))
             self.redirect(next_)
         else:
             message = (
